@@ -2,22 +2,26 @@ import { Radius } from "../radius/radius_state_manager";
 
 export class DiameterBase {
 
-    #stateManager = {};
+    #radius = {};
     #stores = {};
 
     constructor() {
         // Init Radius
-        this.#stateManager = new Radius();
+        this.#radius = new Radius();
     }
 
-    addStore(storeName, storeClass) {
+    addStore(storeName='', storeClass={}) {
         // Only init store if it doesn't exist yet
-        if(!this.#stores.hasOwnProperty(storeName)) {
-            this.#stores[storeName] = new storeClass();
+        if(storeName && !this.#stores.hasOwnProperty(storeName)) {
+            // Add new store to local stores array
+            this.#stores[storeName] = storeClass;
         }
         else {
             console.warn(`The store "${storeName}" already exists.`)
         }
     }
+
+    get radius() { return this.#radius }
+    get stores() { return this.#stores }
 
 }
