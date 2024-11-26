@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
-import terser from '@rollup/plugin-terser';
 
 export default defineConfig({
     plugins: [
