@@ -30,6 +30,10 @@ export class DiameterStore extends DiameterStoreBase {
         super.baseSetState(eventLabel, newState)
     }
 
+    setStateOnly(eventLabel, newState) {
+        super.baseSetStateOnly(eventLabel, newState)
+    }
+
     subscribe(eventLabel, callback) {
         super.baseSubscribe(eventLabel, callback);
     }

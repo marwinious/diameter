@@ -29,6 +29,10 @@ export class DiameterStoreBase {
         this.radius.setState(eventLabel, newState)
     }
 
+    baseSetStateOnly(eventLabel, newState) {
+        this.radius.setStateOnly(eventLabel, newState)
+    }
+
     baseSubscribe(eventLabel, callback) {
         this.radius.subscribe(eventLabel, callback);
     }
