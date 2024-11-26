@@ -6,12 +6,15 @@ describe('stores', () => {
 
     /* let radius = new Radius();
     const mockData = {test: "Testing nav update event" };
-    const mockResponse = mockData;
+    
     const mockEvent = 'testEvent';
 
     beforeEach(() => {
         radius = new Radius();
     }) */
+
+    const mockData = {test: "Testing nav update event" };
+    const mockResponse = mockData;
 
     let diameter = new Diameter();
 
@@ -22,8 +25,6 @@ describe('stores', () => {
     test('should create a new store and add it to diameter instance', () => {
         const newStore = new DiameterStore();
         diameter.addStore('newStore', newStore);
-
-        console.log('diameter.stores.newStore: ', diameter.stores.newStore);
 
         expect(diameter.stores).toHaveProperty('newStore');
     })
@@ -55,22 +56,64 @@ describe('stores', () => {
 
     test('store guest state should match root state after root state change', () => {
         const testStore = new TestStore();
-        const initialState = { foo: "bar" }
-        const updatedState = { foo: "bar2" }
+        const modalShownState = { showModal: true }
+        const modalHideState = { showModal: false }
 
         // Add a new store to Diameter
         diameter.addStore('testStore', testStore);
 
-        console.log("diameter.stores.testStore.radius.getState('some-modal'): ", diameter.stores.testStore.radius.getState('some-modal') );
+        const modalStartState = diameter.stores.testStore.getState('some-modal');
+        console.log("modalStartState: ", modalStartState );
 
+        // Show the modal
         diameter.stores.testStore.showModal();
 
-        console.log("diameter.stores.testStore.radius.getState('some-modal'): ", diameter.stores.testStore.radius.getState('some-modal') );
+        const modalSecondState = diameter.stores.testStore.getState('some-modal');
+        console.log("modalSecondState: ", modalSecondState );
 
+        // Hide the modal
         diameter.stores.testStore.hideModal();
 
-        console.log("diameter.stores.testStore.radius.getState('some-modal'): ", diameter.stores.testStore.radius.getState('some-modal') );
+        const modalThirdState = diameter.stores.testStore.getState('some-modal');
+        console.log("modalThirdState: ", modalThirdState );
         
+        expect(modalStartState).toMatchObject(modalHideState)
+        expect(modalSecondState).toMatchObject(modalShownState)
+        expect(modalThirdState).toMatchObject(modalHideState)
+    })
+
+    test('action should update state', () => {
+        const testStore = new TestStore();
+        const modalShownState = { showModal: true }
+        const modalHideState = { showModal: false }
+
+        // Add a new store to Diameter
+        diameter.addStore('testStore', testStore);
+
+        const modalStartState = diameter.stores.testStore.getState('some-modal');
+        console.log("modalStartState: ", modalStartState );
+
+        // Run an action to show the modal
+        diameter.stores.testStore.runAction('some-modal', 'showModal');
+
+        const modalSecondState = diameter.stores.testStore.getState('some-modal');
+        console.log("modalSecondState: ", modalSecondState );
+
+        expect(modalStartState).toMatchObject(modalHideState)
+        expect(modalSecondState).toMatchObject(modalShownState)
+    })
+
+    test('action should trigger subscriber callback', () => {
+        const mockCallback = vi.fn(() => mockResponse)
+        const testStore = new TestStore();
+        
+        // Add a new store to Diameter
+        diameter.addStore('testStore', testStore);
+
+        diameter.stores.testStore.subscribe('some-modal', (data) => {
+            console.log('callback running from some-modal subscription: ', data);
+            
+        })
     })
 
 })
