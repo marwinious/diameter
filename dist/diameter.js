@@ -218,6 +218,10 @@ class DiameterStoreBase {
         this.radius.setState(eventLabel, newState);
     }
 
+    baseSetStateOnly(eventLabel, newState) {
+        this.radius.setStateOnly(eventLabel, newState);
+    }
+
     baseSubscribe(eventLabel, callback) {
         this.radius.subscribe(eventLabel, callback);
     }
@@ -263,6 +267,10 @@ class DiameterStore extends DiameterStoreBase {
 
     setState(eventLabel, newState) {
         super.baseSetState(eventLabel, newState);
+    }
+
+    setStateOnly(eventLabel, newState) {
+        super.baseSetStateOnly(eventLabel, newState);
     }
 
     subscribe(eventLabel, callback) {
