@@ -104,16 +104,26 @@ describe('stores', () => {
     })
 
     test('action should trigger subscriber callback', () => {
+        const mockCallbackResponse = { showModal: true }
         const mockCallback = vi.fn(() => mockResponse)
         const testStore = new TestStore();
         
         // Add a new store to Diameter
         diameter.addStore('testStore', testStore);
 
+        // Create subscription
         diameter.stores.testStore.subscribe('some-modal', (data) => {
-            console.log('callback running from some-modal subscription: ', data);
-            
+            mockCallback();
         })
+
+        // Run Action
+        diameter.stores.testStore.runAction('some-modal', 'showModal');
+
+        const modalSecondState = diameter.stores.testStore.getState('some-modal');
+        console.log("modalSecondState: ", modalSecondState );
+
+        expect(mockCallback).toHaveBeenCalledOnce();
+        expect(modalSecondState).toMatchObject(mockCallbackResponse)
     })
 
 })
