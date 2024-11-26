@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
+import terser from '@rollup/plugin-terser';
 
 export default defineConfig({
     plugins: [
@@ -12,10 +13,12 @@ export default defineConfig({
             entry: resolve(__dirname, 'main.js'),
             name: "Diameter",
             type: "module",
-            filename: "diameter"
+            filename: "diameter",
+            formats: ['es'], // Ensure it is an ES module format
         },
         sourcemap: true,
         target: 'esnext',
+        // minify: terser, // Enable minification using Terser (default minifier)
         rollupOptions: {
             output: {
                 // You can further customize how the file is named
@@ -23,6 +26,11 @@ export default defineConfig({
                 entryFileNames: 'diameter.js', // Output filename
                 chunkFileNames: '[name].js', // Name for any code-split chunks
                 assetFileNames: '[name][extname]', // Asset filenames
+                // Ensure that minification is applied
+                /* plugins: [
+                    // Use Terser plugin for minification
+                    terser
+                ], */
             }
         }
     }
