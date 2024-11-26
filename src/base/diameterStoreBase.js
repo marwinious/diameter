@@ -10,7 +10,7 @@ export class DiameterStoreBase {
     }
 
     baseAddGuestState(guestLabel, guestState) {
-        this.#guestStates[guestLabel] = guestState;
+        return this.#guestStates[guestLabel] = guestState;
     }
 
     baseGetState(eventLabel) {
@@ -18,27 +18,27 @@ export class DiameterStoreBase {
     }
 
     baseAddAction(eventLabel, actionName, mutatorFn) {
-        this.#radius.addAction(eventLabel, actionName, mutatorFn);
+        return this.#radius.addAction(eventLabel, actionName, mutatorFn);
     }
 
     baseRunAction(eventLabel, actionName, ...args) {
-        this.radius.runAction(eventLabel, actionName, ...args);
+        return this.radius.runAction(eventLabel, actionName, ...args);
     }
 
     baseSetState(eventLabel, newState) {
-        this.radius.setState(eventLabel, newState)
+        return this.radius.setState(eventLabel, newState)
     }
 
     baseSetStateOnly(eventLabel, newState) {
-        this.radius.setStateOnly(eventLabel, newState)
+        return this.radius.setStateOnly(eventLabel, newState)
     }
 
     baseSubscribe(eventLabel, callback) {
-        this.radius.subscribe(eventLabel, callback);
+        return this.radius.subscribe(eventLabel, callback);
     }
 
     baseUnsubscribe(eventLabel, callback) {
-        this.radius.unsubcribe(eventLabel, callback);
+        return this.radius.unsubcribe(eventLabel, callback);
     }
 
     get radius() { return this.#radius }
