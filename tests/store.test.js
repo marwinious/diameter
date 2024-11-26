@@ -126,4 +126,23 @@ describe('stores', () => {
         expect(modalSecondState).toMatchObject(mockCallbackResponse)
     })
 
+    test('action should add user to array', () => {
+        const testStore = new TestStore();
+        const expectedState = { userList: [ { name: 'John', age: 30 }, { name: 'Jane', age: 29 } ] }
+        
+        // Add a new store to Diameter
+        diameter.addStore('testStore', testStore);
+
+        // Set initial state
+        diameter.stores.testStore.setState('some-user-list', { userList: [ { name: "John", age: 30 } ] })
+
+        // Run Action
+        diameter.stores.testStore.runAction('some-user-list', 'addUser', { name: "Jane", age: 29 });
+
+        const secondState = diameter.stores.testStore.getState('some-user-list');
+        console.log("secondState: ", secondState );
+
+        expect(secondState).toMatchObject(expectedState)
+    })
+
 })
