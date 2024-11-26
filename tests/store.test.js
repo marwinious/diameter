@@ -164,4 +164,20 @@ describe('stores', () => {
         expect(secondState).toMatchObject(expectedState)
     })
 
+    test('store method subscription should work', () => {
+        const testStore = new TestStore();
+        const newLoginState = { isLoggedIn: true, user: { name: "John" } }
+        
+        // Add a new store to Diameter
+        diameter.addStore('testStore', testStore);
+
+        // Update some state
+        diameter.stores.testStore.setState('some-login-state', newLoginState)
+
+        const secondState = diameter.stores.testStore.getState('some-login-state');
+        console.log("secondState: ", secondState );
+
+        expect(secondState).toMatchObject(newLoginState);
+    })
+
 })
