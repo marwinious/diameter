@@ -199,7 +199,7 @@ class DiameterStoreBase {
     }
 
     baseAddGuestState(guestLabel, guestState) {
-        this.#guestStates[guestLabel] = guestState;
+        return this.#guestStates[guestLabel] = guestState;
     }
 
     baseGetState(eventLabel) {
@@ -207,27 +207,27 @@ class DiameterStoreBase {
     }
 
     baseAddAction(eventLabel, actionName, mutatorFn) {
-        this.#radius.addAction(eventLabel, actionName, mutatorFn);
+        return this.#radius.addAction(eventLabel, actionName, mutatorFn);
     }
 
     baseRunAction(eventLabel, actionName, ...args) {
-        this.radius.runAction(eventLabel, actionName, ...args);
+        return this.radius.runAction(eventLabel, actionName, ...args);
     }
 
     baseSetState(eventLabel, newState) {
-        this.radius.setState(eventLabel, newState);
+        return this.radius.setState(eventLabel, newState)
     }
 
     baseSetStateOnly(eventLabel, newState) {
-        this.radius.setStateOnly(eventLabel, newState);
+        return this.radius.setStateOnly(eventLabel, newState)
     }
 
     baseSubscribe(eventLabel, callback) {
-        this.radius.subscribe(eventLabel, callback);
+        return this.radius.subscribe(eventLabel, callback);
     }
 
     baseUnsubscribe(eventLabel, callback) {
-        this.radius.unsubcribe(eventLabel, callback);
+        return this.radius.unsubcribe(eventLabel, callback);
     }
 
     get radius() { return this.#radius }
@@ -246,7 +246,7 @@ class DiameterStore extends DiameterStoreBase {
     }
 
     addTangent(guestLabel, guestState) {
-        super.baseAddGuestState(guestLabel, guestState);
+        return super.baseAddGuestState(guestLabel, guestState)
     }
 
     getState(eventLabel) {
@@ -258,27 +258,27 @@ class DiameterStore extends DiameterStoreBase {
     }
 
     addAction(eventLabel, actionName, mutatorFn) {
-        super.baseAddAction(eventLabel, actionName, mutatorFn);
+        return super.baseAddAction(eventLabel, actionName, mutatorFn)
     }
 
     runAction(eventLabel, actionName, ...args) {
-        super.baseRunAction(eventLabel, actionName, ...args);
+        return super.baseRunAction(eventLabel, actionName, ...args)
     }
 
     setState(eventLabel, newState) {
-        super.baseSetState(eventLabel, newState);
+        return super.baseSetState(eventLabel, newState)
     }
 
     setStateOnly(eventLabel, newState) {
-        super.baseSetStateOnly(eventLabel, newState);
+        return super.baseSetStateOnly(eventLabel, newState)
     }
 
     subscribe(eventLabel, callback) {
-        super.baseSubscribe(eventLabel, callback);
+        return super.baseSubscribe(eventLabel, callback);
     }
 
     unsubscribe(eventLabel, callback) {
-        super.baseUnsubscribe(eventLabel, callback);
+        return super.baseUnsubscribe(eventLabel, callback);
     }
 
 }
