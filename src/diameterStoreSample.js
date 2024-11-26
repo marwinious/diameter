@@ -41,4 +41,8 @@ export class TestStore extends DiameterStore {
         this.setState('some-modal', { showModal: false })
     }
 
+    addUser(firstName, age) {
+        this.runAction('some-user-list', 'addUser', { name: firstName, age: age })
+    }
+
 }
