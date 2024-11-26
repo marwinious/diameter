@@ -5,18 +5,25 @@ export class TestStore extends DiameterStore {
     constructor() {
         super();
         this.initState();
+        this.initActions();
     }
 
     initState() {
-        this.radius.setState('some-modal', { showModal: false })
+        this.setState('some-modal', { showModal: false })
+    }
+
+    initActions() {
+        this.addAction('some-modal', 'showModal', (state) => {
+            return {...state, showModal: true }
+        })
     }
 
     showModal() {
-        this.radius.setState('some-modal', { showModal: true })
+        this.setState('some-modal', { showModal: true })
     }
 
     hideModal() {
-        this.radius.setState('some-modal', { showModal: false })
+        this.setState('some-modal', { showModal: false })
     }
 
 }
