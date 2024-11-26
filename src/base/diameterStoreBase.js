@@ -38,6 +38,10 @@ export class DiameterStoreBase {
     }
 
     get radius() { return this.#radius }
+
     get guestStates() { return this.#guestStates }
     set guestStates(newGuestStates) { this.#guestStates = newGuestStates }
+
+    get tangents() { return this.#guestStates }
+    set tangents(newTangent) { this.#guestStates = newTangent }
 }

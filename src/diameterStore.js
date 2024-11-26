@@ -6,12 +6,16 @@ export class DiameterStore extends DiameterStoreBase {
         super();
     }
 
-    addGuestState(guestLabel, guestState) {
+    addTangent(guestLabel, guestState) {
         super.baseAddGuestState(guestLabel, guestState)
     }
 
     getState(eventLabel) {
         return super.baseGetState(eventLabel)
+    }
+
+    getTangent(tangentLabel) {
+        return super.tangents[tangentLabel];
     }
 
     addAction(eventLabel, actionName, mutatorFn) {
