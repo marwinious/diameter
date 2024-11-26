@@ -29,6 +29,25 @@ describe('stores', () => {
         expect(diameter.stores).toHaveProperty('newStore');
     })
 
+    test('should create a new tangent (guest state) and retrieve it', () => {
+        const testStore = new DiameterStore();
+        const expectedState = { foo: "bar" }
+
+        // Add a new store to Diameter
+        diameter.addStore('testStore', testStore);
+
+        // Add tangent
+        diameter.stores.testStore.addTangent('sample', diameter.radius)
+
+        // Update tangent state (outside of store)
+        diameter.radius.setState('some-event', expectedState );
+
+        const tangentSecondState = diameter.stores.testStore.getTangent('sample').getState('some-event');
+        console.log('tangentSecondState: ', tangentSecondState);
+
+        expect(tangentSecondState).toMatchObject(expectedState);
+    })
+
     test('store guest state should match root state after root state change', () => {
         const newStore = new DiameterStore();
         const initialState = { foo: "bar" }
@@ -41,7 +60,7 @@ describe('stores', () => {
         diameter.radius.state = initialState
 
         // Add the root Diameter state instance as a guest to the new store
-        diameter.stores.newStore.addGuestState('test', diameter.radius);
+        diameter.stores.newStore.addTangent('test', diameter.radius);
 
         // Update the state of the root Diameter instance
         diameter.radius.state = updatedState
