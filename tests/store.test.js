@@ -1,5 +1,6 @@
 import { describe, expect, test, expectTypeOf, vi, beforeEach } from 'vitest'
 import { Diameter, DiameterStore } from '../main'
+// import { Diameter, DiameterStore } from '../dist/diameter'
 import { TestStore } from '../src/diameterStoreSample';
 
 describe('stores', () => {
