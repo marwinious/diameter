@@ -1,100 +1,133 @@
-class u {
-  #s = {};
-  #t = {};
+class c {
   #e = {};
+  #t = {};
+  #s = {};
   constructor() {
   }
   getState(t) {
-    return this.#s[t] || {};
+    return this.#e[t] || {};
   }
-  setState(t, s) {
-    this.initEvent(t), this.#s[t] = { ...this.#s[t], ...s }, this.notify(t);
+  setState(t, e) {
+    this.initEvent(t);
+    const s = this.#e[t];
+    return this.#e[t] = { ...this.#e[t], ...e }, this.notify(t), {
+      event: t,
+      newState: e,
+      previousState: s
+    };
   }
-  subscribe(t, s) {
-    if (typeof s != "function")
+  subscribe(t, e) {
+    if (typeof e != "function")
       throw new Error("Subscriber callbacks must be functions");
-    this.initEvent(t), this.#t[t].push(s);
+    return this.initEvent(t), this.#t[t].push(e), {
+      event: t,
+      callback: e,
+      unsubscribe: () => {
+        this.unsubscribe(t, e);
+      }
+    };
   }
   initEvent(t) {
-    this.#s[t] || (this.#s[t] = {}, this.#t[t] = []);
+    this.#e[t] ? console.warn(`Event "${t}" already exists`) : (this.#e[t] = {}, this.#t[t] = []);
   }
-  unsubscribe(t, s) {
-    this.#t[t] = this.#t[t].filter((e) => e !== s);
+  unsubscribe(t, e) {
+    let s = !1;
+    return this.#t[t] = this.#t[t].filter((r) => (r === e && (s = !0), r !== e)), s ? {
+      event: t,
+      unsubscribedCallback: e
+    } : {
+      event: t,
+      unsubscribedCallback: "not found"
+    };
   }
-  addAction(t, s, e) {
-    if (typeof e != "function")
+  addAction(t, e, s) {
+    if (typeof s != "function")
       throw new Error("Action callbacks must be functions");
-    this.#e[t] || (this.#e[t] = {}), this.#e[t][s] = e;
+    return this.#s[t] || (this.#s[t] = {}), this.#s[t][e] = s, {
+      event: t,
+      actionName: e,
+      mutator: s
+    };
   }
-  runAction(t, s, ...e) {
-    const r = this.#e[t]?.[s];
+  runAction(t, e, ...s) {
+    const r = this.#s[t]?.[e];
     if (r) {
-      const n = r(this.#s[t], ...e);
-      n && this.setState(t, n);
+      const n = r(this.#e[t], ...s);
+      if (n) {
+        const u = this.getState(t);
+        return this.setState(t, n), {
+          newState: this.getState(t),
+          previousState: u
+        };
+      }
     } else
-      console.warn(`Action "${s}" for event "${t}" not found`);
+      console.warn(`Action "${e}" for event "${t}" not found`);
   }
   notify(t) {
-    this.#t.hasOwnProperty(t) && this.#t[t].forEach((s) => {
-      s(this.getState(t));
-    });
+    const e = [], s = this.getState(t);
+    return this.#t.hasOwnProperty(t) && this.#t[t].forEach((r) => {
+      r(s), e.push(r);
+    }), {
+      event: t,
+      notifiedSubscribers: e
+    };
   }
 }
-class a extends u {
-  constructor() {
-    super();
-  }
-}
-class c {
-  #s = {};
-  #t = {};
-  constructor() {
-    this.#s = new a();
-  }
-  addStore(t = "", s = {}) {
-    t && !this.#t.hasOwnProperty(t) ? this.#t[t] = s : console.warn(`The store "${t}" already exists.`);
-  }
-  get radius() {
-    return this.#s;
-  }
-  get stores() {
-    return this.#t;
-  }
-}
-class h extends c {
+class a extends c {
   constructor() {
     super();
   }
 }
 class o {
-  #s = {};
+  #e = {};
   #t = {};
   constructor() {
-    this.#s = new a();
+    this.#e = new a();
   }
-  baseAddGuestState(t, s) {
-    this.#t[t] = s;
+  addStore(t = "", e = {}) {
+    t && !this.#t.hasOwnProperty(t) ? this.#t[t] = e : console.warn(`The store "${t}" already exists.`);
+  }
+  get radius() {
+    return this.#e;
+  }
+  get stores() {
+    return this.#t;
+  }
+}
+class h extends o {
+  constructor() {
+    super();
+  }
+}
+class b {
+  #e = {};
+  #t = {};
+  constructor() {
+    this.#e = new a();
+  }
+  baseAddGuestState(t, e) {
+    this.#t[t] = e;
   }
   baseGetState(t) {
     return this.radius.getState(t);
   }
-  baseAddAction(t, s, e) {
-    this.#s.addAction(t, s, e);
+  baseAddAction(t, e, s) {
+    this.#e.addAction(t, e, s);
   }
-  baseRunAction(t, s, ...e) {
-    this.radius.runAction(t, s, ...e);
+  baseRunAction(t, e, ...s) {
+    this.radius.runAction(t, e, ...s);
   }
-  baseSetState(t, s) {
-    this.radius.setState(t, s);
+  baseSetState(t, e) {
+    this.radius.setState(t, e);
   }
-  baseSubscribe(t, s) {
-    this.radius.subscribe(t, s);
+  baseSubscribe(t, e) {
+    this.radius.subscribe(t, e);
   }
-  baseUnsubscribe(t, s) {
-    this.radius.unsubcribe(t, s);
+  baseUnsubscribe(t, e) {
+    this.radius.unsubcribe(t, e);
   }
   get radius() {
-    return this.#s;
+    return this.#e;
   }
   get guestStates() {
     return this.#t;
@@ -109,12 +142,12 @@ class o {
     this.#t = t;
   }
 }
-class b extends o {
+class d extends b {
   constructor() {
     super();
   }
-  addTangent(t, s) {
-    super.baseAddGuestState(t, s);
+  addTangent(t, e) {
+    super.baseAddGuestState(t, e);
   }
   getState(t) {
     return super.baseGetState(t);
@@ -122,24 +155,24 @@ class b extends o {
   getTangent(t) {
     return super.tangents[t];
   }
-  addAction(t, s, e) {
-    super.baseAddAction(t, s, e);
+  addAction(t, e, s) {
+    super.baseAddAction(t, e, s);
   }
-  runAction(t, s, ...e) {
-    super.baseRunAction(t, s, ...e);
+  runAction(t, e, ...s) {
+    super.baseRunAction(t, e, ...s);
   }
-  setState(t, s) {
-    super.baseSetState(t, s);
+  setState(t, e) {
+    super.baseSetState(t, e);
   }
-  subscribe(t, s) {
-    super.baseSubscribe(t, s);
+  subscribe(t, e) {
+    super.baseSubscribe(t, e);
   }
-  unsubscribe(t, s) {
-    super.baseUnsubscribe(t, s);
+  unsubscribe(t, e) {
+    super.baseUnsubscribe(t, e);
   }
 }
 export {
   h as Diameter,
-  b as DiameterStore
+  d as DiameterStore
 };
 //# sourceMappingURL=diameter.js.map
