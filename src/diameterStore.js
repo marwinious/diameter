@@ -42,4 +42,12 @@ export class DiameterStore extends DiameterStoreBase {
         return super.baseUnsubscribe(eventLabel, callback);
     }
 
+    watch(eventLabel, propertyLabel, callback) {
+        return super.baseWatch(eventLabel, propertyLabel, callback);
+    }
+
+    stopWatcher(eventLabel, propertyLabel, callback) {
+        return super.baseStopWatcher(eventLabel, propertyLabel, callback);
+    }
+
 }
