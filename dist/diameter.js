@@ -322,6 +322,14 @@ class DiameterStoreBase {
         return this.radius.unsubcribe(eventLabel, callback);
     }
 
+    baseWatch(eventLabel, propertyLabel, callback) {
+        return this.radius.watch(eventLabel, propertyLabel, callback)
+    }
+
+    baseStopWatcher(eventLabel, propertyLabel, callback) {
+        return this.radius.stopWatcher(eventLabel, propertyLabel, callback)
+    }
+
     get radius() { return this.#radius }
 
     get guestStates() { return this.#guestStates }
@@ -371,6 +379,14 @@ class DiameterStore extends DiameterStoreBase {
 
     unsubscribe(eventLabel, callback) {
         return super.baseUnsubscribe(eventLabel, callback);
+    }
+
+    watch(eventLabel, propertyLabel, callback) {
+        return super.baseWatch(eventLabel, propertyLabel, callback);
+    }
+
+    stopWatcher(eventLabel, propertyLabel, callback) {
+        return super.baseStopWatcher(eventLabel, propertyLabel, callback);
     }
 
 }
