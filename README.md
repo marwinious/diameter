@@ -3,7 +3,7 @@ Diameter is a simple, drop-in javascript store to add a layer between your front
 
 You can abstract away numerous actions and methods from your components to keep front-end code simple, readable, and "dumber" by letting Diameter translate simple requests into slightly more complex state management concerns.
 
-Diameter is built on top of Radius, making Diameter a store than manages state and actions where the state itself is handled by Radius under the hood.
+Diameter is built on top of [Radius](https://bitbucket.org/cmgodigital/radius_state_manager/src/main/), making Diameter a store than manages state and actions where the state itself is handled by Radius under the hood.
 
 ### Creating a basic store
 Spinning up a new store is very straight-forward, requiring one import and a new class.

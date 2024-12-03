@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
-import terser from '@rollup/plugin-terser';
 
 export default defineConfig({
     plugins: [
@@ -18,6 +17,7 @@ export default defineConfig({
         },
         sourcemap: true,
         target: 'esnext',
+        minify: false,
         // minify: terser, // Enable minification using Terser (default minifier)
         rollupOptions: {
             output: {

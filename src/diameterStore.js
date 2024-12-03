@@ -7,7 +7,7 @@ export class DiameterStore extends DiameterStoreBase {
     }
 
     addTangent(guestLabel, guestState) {
-        super.baseAddGuestState(guestLabel, guestState)
+        return super.baseAddGuestState(guestLabel, guestState)
     }
 
     getState(eventLabel) {
@@ -19,23 +19,35 @@ export class DiameterStore extends DiameterStoreBase {
     }
 
     addAction(eventLabel, actionName, mutatorFn) {
-        super.baseAddAction(eventLabel, actionName, mutatorFn)
+        return super.baseAddAction(eventLabel, actionName, mutatorFn)
     }
 
     runAction(eventLabel, actionName, ...args) {
-        super.baseRunAction(eventLabel, actionName, ...args)
+        return super.baseRunAction(eventLabel, actionName, ...args)
     }
 
     setState(eventLabel, newState) {
-        super.baseSetState(eventLabel, newState)
+        return super.baseSetState(eventLabel, newState)
+    }
+
+    setStateOnly(eventLabel, newState) {
+        return super.baseSetStateOnly(eventLabel, newState)
     }
 
     subscribe(eventLabel, callback) {
-        super.baseSubscribe(eventLabel, callback);
+        return super.baseSubscribe(eventLabel, callback);
     }
 
     unsubscribe(eventLabel, callback) {
-        super.baseUnsubscribe(eventLabel, callback);
+        return super.baseUnsubscribe(eventLabel, callback);
+    }
+
+    watch(eventLabel, propertyLabel, callback) {
+        return super.baseWatch(eventLabel, propertyLabel, callback);
+    }
+
+    stopWatcher(eventLabel, propertyLabel, callback) {
+        return super.baseStopWatcher(eventLabel, propertyLabel, callback);
     }
 
 }
