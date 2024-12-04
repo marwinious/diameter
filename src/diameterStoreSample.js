@@ -14,7 +14,7 @@ export class TestStore extends DiameterStore {
         this.setState('some-counter', { counter: 0 })
         this.setState('some-user', { user: {name: "John"} })
         this.setState('some-user-list', { userList: [ { name: "John", age: 30 } ] })
-        this.setState('some-login-state'), { isLoggedIn: false }
+        this.setState('some-login-state', { isLoggedIn: false })
     }
 
     initSubscriptions() {
@@ -39,7 +39,9 @@ export class TestStore extends DiameterStore {
         })
 
         this.addAction('some-user-list', 'addUser', (state, newUser) => {
-            return state.userList.push(newUser);
+            const newState = state;
+            newState.userList.push(newUser);
+            return newState;
         })
     }
 
