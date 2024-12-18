@@ -22,6 +22,7 @@ export class DiameterBase {
     }
 
     get radius() { return this.#radius }
+    get state() { return this.#radius }
     get stores() { return this.#stores }
 
 }
