@@ -92,7 +92,7 @@ class RadiusBase {
         return {
             event: event,
             callback: callbackFn,
-            unsubscribe: () => { this.unsubscribe(event, callbackFn); }
+            unsubscribe: () => this.unsubscribe(event, callbackFn)
         }
 
     }
@@ -340,7 +340,7 @@ class DiameterStoreBase {
     }
 
     baseUnsubscribe(eventLabel, callback) {
-        return this.radius.unsubcribe(eventLabel, callback);
+        return this.radius.unsubscribe(eventLabel, callback);
     }
 
     baseWatch(eventLabel, propertyLabel, callback) {
