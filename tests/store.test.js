@@ -200,4 +200,28 @@ describe('stores', () => {
         expect(secondState).toMatchObject(newLoginState);
     })
 
+    test('unsubscribe from store state should work', () => {
+        const mockCallbackResponse = { isLoggedIn: true }
+        const mockCallback = vi.fn(() => mockResponse)
+        const testStore = new TestStore();
+        const newLoginState = mockCallbackResponse
+        
+        // Add a new store to Diameter
+        diameter.addStore('testStore', testStore);
+
+        // Subscribe to store state
+        const storeSubscriber = diameter.stores.testStore.subscribe('some-login-state', mockCallback);
+        
+        // Update some state
+        diameter.stores.testStore.setState('some-login-state', newLoginState)
+
+        // Unsibscribe
+        const unsubscribe = storeSubscriber.unsubscribe();
+        
+        // Update some state
+        diameter.stores.testStore.setState('some-login-state', { isLoggedIn: false })
+
+        expect(mockCallback).toHaveBeenCalledOnce()
+    })
+
 })
