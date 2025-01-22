@@ -38,7 +38,7 @@ export class DiameterStoreBase {
     }
 
     baseUnsubscribe(eventLabel, callback) {
-        return this.radius.unsubcribe(eventLabel, callback);
+        return this.radius.unsubscribe(eventLabel, callback);
     }
 
     baseWatch(eventLabel, propertyLabel, callback) {

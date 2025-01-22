@@ -9,7 +9,11 @@ class RadiusBase {
     }
 
     getState(event) {
-        return this.#states[event] || {};
+        if(typeof this.#states[event] != 'undefined') {
+            return this.#states[event]
+        }
+        
+        return {}
     }
 
     setState(event, newState) {
@@ -28,15 +32,28 @@ class RadiusBase {
         this.initEvent(event);
         const previousState = structuredClone(this.#states[event]);
 
-        // Merge new state with current state
-        this.#states[event] = {...this.#states[event], ...newState};
+        if(newState.constructor === Object) {
+            // Merge new state with current state
+            this.#states[event] = {...this.#states[event], ...newState};
+        }
+        else if(newState.constructor === String 
+            || newState.constructor === Array 
+            || newState.constructor === Number
+            || newState.constructor === Boolean
+        ) {
+            // Set specific event value to newState instead of spreading
+            this.#states[event] = newState;
+        }
 
-        // Return
-        return {
+        // Create return object
+        const returnState = {
             event: event,
             newState: newState,
             previousState: previousState
-        }
+        };
+
+        // Return
+        return returnState
     }
 
     watch(event, property, callbackFn) {
@@ -75,13 +92,13 @@ class RadiusBase {
         return {
             event: event,
             callback: callbackFn,
-            unsubscribe: () => { this.unsubscribe(event, callbackFn); }
+            unsubscribe: () => this.unsubscribe(event, callbackFn)
         }
 
     }
 
     initEvent(event) {
-        if(!this.#states[event]) { 
+        if(typeof this.#states[event] == 'undefined') { 
             this.#states[event] = {};
             this.#events[event] = {
                 subscribers: [],
@@ -270,6 +287,7 @@ class DiameterBase {
     }
 
     get radius() { return this.#radius }
+    get state() { return this.#radius }
     get stores() { return this.#stores }
 
 }
@@ -322,7 +340,7 @@ class DiameterStoreBase {
     }
 
     baseUnsubscribe(eventLabel, callback) {
-        return this.radius.unsubcribe(eventLabel, callback);
+        return this.radius.unsubscribe(eventLabel, callback);
     }
 
     baseWatch(eventLabel, propertyLabel, callback) {
@@ -395,4 +413,3 @@ class DiameterStore extends DiameterStoreBase {
 }
 
 export { Diameter, DiameterStore };
-//# sourceMappingURL=diameter.js.map

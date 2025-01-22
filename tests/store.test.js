@@ -58,23 +58,23 @@ describe('stores', () => {
         diameter.addStore('newStore', newStore);
 
         // Create initial state in root Diameter instance
-        diameter.radius.state = initialState
+        diameter.radius.setState('testState', initialState)
 
         // Add the root Diameter state instance as a guest to the new store
         diameter.stores.newStore.addTangent('test', diameter.radius);
 
         // Update the state of the root Diameter instance
-        diameter.radius.state = updatedState
+        diameter.radius.setState('testState', updatedState);
 
-        console.log('diameter.radius.state: ', diameter.radius.state);
-        console.log('diameter.stores.newStore.guestStates.test.state: ', diameter.stores.newStore.guestStates.test.state);
+        console.log('diameter.radius.state: ', diameter.radius.getState('testState'));
+        console.log('diameter.stores.newStore.guestStates.test.state: ', diameter.stores.newStore.guestStates.test.getState('testState'));
 
         expect(diameter.stores).toHaveProperty('newStore');
-        expect(diameter.radius.state).toMatchObject(updatedState);
-        expect(diameter.stores.newStore.guestStates.test.state).toMatchObject(updatedState);
+        expect(diameter.radius.getState('testState')).toMatchObject(updatedState);
+        expect(diameter.stores.newStore.guestStates.test.getState('testState')).toMatchObject(updatedState);
     })
 
-    test('store guest state should match root state after root state change', () => {
+    test('diameter state should change when store methods are called that change state', () => {
         const testStore = new TestStore();
         const modalShownState = { showModal: true }
         const modalHideState = { showModal: false }
@@ -198,6 +198,30 @@ describe('stores', () => {
         console.log("secondState: ", secondState );
 
         expect(secondState).toMatchObject(newLoginState);
+    })
+
+    test('unsubscribe from store state should work', () => {
+        const mockCallbackResponse = { isLoggedIn: true }
+        const mockCallback = vi.fn(() => mockResponse)
+        const testStore = new TestStore();
+        const newLoginState = mockCallbackResponse
+        
+        // Add a new store to Diameter
+        diameter.addStore('testStore', testStore);
+
+        // Subscribe to store state
+        const storeSubscriber = diameter.stores.testStore.subscribe('some-login-state', mockCallback);
+        
+        // Update some state
+        diameter.stores.testStore.setState('some-login-state', newLoginState)
+
+        // Unsibscribe
+        const unsubscribe = storeSubscriber.unsubscribe();
+        
+        // Update some state
+        diameter.stores.testStore.setState('some-login-state', { isLoggedIn: false })
+
+        expect(mockCallback).toHaveBeenCalledOnce()
     })
 
 })
