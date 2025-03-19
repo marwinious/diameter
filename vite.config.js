@@ -6,18 +6,19 @@ export default defineConfig({
         
     ],
     build: {
-        format: 'es',
+        // format: 'es',
         outDir: 'dist',
         lib: {
             entry: resolve(__dirname, 'main.js'),
-            name: "Diameter",
-            type: "module",
-            filename: "diameter",
+            name: "Vertex",
+            // type: "module",
+            // filename: "vertex",
+            filename: (format) => `diameter.${format}.js`,
             formats: ['es'], // Ensure it is an ES module format
         },
-        sourcemap: false,
+        sourcemap: true,
         target: 'esnext',
-        minify: false,
+        minify: true,
         // minify: terser, // Enable minification using Terser (default minifier)
         rollupOptions: {
             output: {

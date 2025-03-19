@@ -6,6 +6,17 @@
   "directories": {
     "test": "tests"
   },
+  "main": "dist/diameter.umd.js",
+  "module": "dist/diameter.js",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/diameter.js",
+      "require": "./dist/diameter.umd.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
