@@ -1,0 +1,2 @@
+function t({name:t,store:e,engine:n,actions:r={}}){return{name:t,get state(){return e.getState(t)},subscribe:n=>e.watch(t,n),get actions(){if(n)try{return n.getActions(t)}catch{}return{}},...r}}export{t as createFeatureStore};
+//# sourceMappingURL=diameter_store.js.map
