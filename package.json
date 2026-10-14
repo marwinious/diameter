@@ -12,7 +12,7 @@
         "dist"
     ],
     "exports": {
-        ".": "./dist/radius_state_manager.js"
+        ".": "./dist/diameter_store.js"
     },
     "scripts": {
         "dev": "vite",
