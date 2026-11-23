@@ -1,325 +1,170 @@
-### Diameter Javascript Store
-Diameter is a simple, drop-in javascript store to add a layer between your front-end UI code and fundamental state management. 
+# Diameter ⭕
 
-You can abstract away numerous actions and methods from your components to keep front-end code simple, readable, and "dumber" by letting Diameter translate simple requests into slightly more complex state management concerns.
+> A lightweight, framework-agnostic feature store pattern designed to bridge reactive state management and application logic smoothly and flexibly.
 
-Diameter is built on top of [Radius](https://bitbucket.org/cmgodigital/radius_state_manager/src/main/), making Diameter a store than manages state and actions where the state itself is handled by Radius under the hood.
+Diameter acts as an expressive facade for feature slices in your application. It provides a clean, predictable API for reading reactive state, subscribing to updates, and executing business logic—without hard-coupling your UI or application code to any specific state library or engine framework.
 
-### Creating a basic store
-Spinning up a new store is very straight-forward, requiring one import and a new class.
+---
 
-```javascript
-import { DiameterStore } from './path/to/diameter'
+## Key Features
 
-export class MyStore extends DiameterStore {
+- 🔌 **Framework & Library Agnostic**: Seamlessly works with plain JavaScript objects, **Radius**, Redux, Zustand, RxJS, Signals, or custom state stores.
+- ⚙️ **Optional Engine Support**: Dynamically binds to action execution engines like **Vertex** when present, but remains completely functional on its own.
+- 🔄 **Unified Subscription API**: Standardizes reactive state consumption across different reactivity primitives.
+- 🛠️ **Flexible Action Definitions**: Define actions as simple objects or context-aware factory functions.
+- 📦 **Zero Dependencies**: Lightweight, self-contained, and footprint-free.
 
-    constructor() {
-        super();
-    }
+---
 
-}
-```
+## Installation
 
-That's it! Anything beyond that basic setup is entirely up to you. Of course there are some suggested approaches to make the most use of Diameter as you'll see below.
-
-## OPTIONAL SETUP
-Everything below is entirely optional and is intended to give you an idea of how Diameter could be setup, but don't feel limited by any of this.
-
-### Initializing State
-A good idea for your store boilerplate might be to initialize various things upon instantiation to help bootstrap the store. Setting up some initial states can help make your code more readable and understandable since you'll have all of the relevant events in one easy place to reference.
-
-The `.setState()` method accepts an event label and an object representing the state you want to add/change: `.setState(eventLabel, stateObj)`
+Simply copy `diameter.js` into your project source directory or import it as a module:
 
 ```javascript
-import { DiameterStore } from './path/to/diameter'
-
-export class MyStore extends DiameterStore {
-
-    constructor() {
-        super();
-        this.initState();
-    }
-
-    initState() {
-        this.setState('some-modal', { showModal: false })
-        this.setState('some-counter', { counter: 0 })
-        this.setState('some-user', { user: {name: "John"} })
-        this.setState('some-user-list', { userList: [ { name: "John", age: 30 } ] })
-        this.setState('some-login-state'), { isLoggedIn: false }
-    }
-
-}
+import { createFeatureStore } from './diameter.js'
 ```
 
-### Initializing Actions
-Defining some common actions that your app might need will give all users of your store quick access to reusable state patterns.
+---
 
-The `.addAction()` method accepts an event label, an action name, and a state-changing callback: `.addAction(eventLabel, actionName, stateCallbackFn)`
+## Core Concepts
 
-Actions are isolated to a given event within a given store, maximizing scope separations, reducing namespace collisions, and symantically organizing your actions to events.
+Diameter unifies three core capabilities of a feature module:
+1. **State Reader (`store.state`)**: Access current state snapshot reactively or statically.
+2. **Subscription (`store.subscribe`)**: Receive callbacks when feature state updates.
+3. **Actions (`store.actions`)**: Invoke mutations, engine actions, or async workflows.
+
+---
+
+## Usage Guide
+
+### 1. Minimal / Standalone Usage (Zero External Dependencies)
+
+Create a store with a simple getter function and inline action definitions:
 
 ```javascript
-import { DiameterStore } from './path/to/diameter'
+import { createFeatureStore } from './diameter.js'
 
-export class MyStore extends DiameterStore {
+let count = 0
 
-    constructor() {
-        super();
-        this.initActions();
+export const counterStore = createFeatureStore({
+    name: 'counter',
+    state: () => ({ count }),
+    actions: {
+        increment() {
+            count++
+        },
+        decrement() {
+            count--
+        }
     }
+})
 
-    initActions() {
-        this.addAction('some-modal', 'showModal', (state) => {
-            return {...state, showModal: true }
-        })
+// Read state
+console.log(counterStore.state) // { count: 0 }
 
-        this.addAction('some-counter', 'incrementCounter', (state) => {
-            return {...state, counter: state.counter+1}
-        })
-
-        this.addAction('some-user', 'changeName', (state, newName) => {
-            return {...state, user: { name: newName }}
-        })
-
-        this.addAction('some-user-list', 'addUser', (state, newUser) => {
-            return state.userList.push(newUser);
-        })
-    }
-
-}
+// Execute actions
+counterStore.actions.increment()
+console.log(counterStore.state) // { count: 1 }
 ```
 
-### Initializing Subscriptions
-While you'll probably use state change subscriptions primarily in your components, a Diameter store can also subscribe to various events and run methods on itself to handle some concerns directly without involving outside components at all.
+---
+
+### 2. Integration with State Stores (e.g., Radius)
+
+Diameter automatically detects standard store methods like `.getState()` and `.watch()` or `.subscribe()`:
 
 ```javascript
-import { DiameterStore } from './path/to/diameter'
+import { createState } from './radius.js'
+import { createFeatureStore } from './diameter.js'
 
-export class MyStore extends DiameterStore {
+const radiusStore = createState({
+    user: { name: 'Alice', loggedIn: true }
+})
 
-    constructor() {
-        super();
-        this.initSubscriptions();
+export const userStore = createFeatureStore({
+    name: 'user',
+    state: radiusStore, // Automatically resolves radiusStore.getState('user')
+    actions: {
+        logout() {
+            radiusStore.setState({ user: { name: null, loggedIn: false } })
+        }
     }
+})
 
-    initSubscriptions() {
-        const self = this;
+// Subscribe to feature slice changes
+const unsubscribe = userStore.subscribe((newUser, oldUser) => {
+    console.log(`User state changed:`, newUser)
+})
 
-        this.subscribe('some-login-state', (state) => {
-            self.login(state);
-        })
-    }
-
-    login(state) {
-        console.log('made it to "login" in our sample store: ', state);
-    }
-
-}
+userStore.actions.logout()
 ```
 
-### Sample Store Methods
-Your Diameter store is intended to simplify certain actions that your app might want to take so that you can write smaller component code. In addition, it provides a single source of truth for everything a given store/feature might be concerned with which reduces the need to file-dive in your app to find various state, methods, etc.
+---
+
+### 3. Engine Integration (e.g., Vertex Engine)
+
+When an engine like **Vertex** is supplied, Diameter lazily resolves registered controller actions or provides the engine instance directly to action factories:
 
 ```javascript
-import { DiameterStore } from './path/to/diameter'
+import { createEngine } from './createEngine.js'
+import { createState } from './radius.js'
+import { createFeatureStore } from './diameter.js'
 
-export class MyStore extends DiameterStore {
+const radiusStore = createState({ cart: { items: [], total: 0 } })
+const vertexEngine = createEngine({ stateStore: radiusStore })
 
-    constructor() {
-        super();
-    }
+export const cartStore = createFeatureStore({
+    name: 'cart',
+    state: radiusStore,
+    engine: vertexEngine, // Optional execution engine
+    
+    // Actions can be defined as factory functions receiving { name, state, engine }
+    actions: ({ engine }) => ({
+        addItem(item) {
+            if (engine) {
+                // Trigger event-driven workflow via engine event bus
+                engine.events.emit('cart:item-added', item)
+            } else {
+                console.log('Engine not present; running standalone logic.')
+            }
+        }
+    })
+})
 
-    showModal() {
-        this.setState('some-modal', { showModal: true })
-    }
-
-    hideModal() {
-        this.setState('some-modal', { showModal: false })
-    }
-
-    addUser(firstName, age) {
-        this.runAction('some-user-list', 'addUser', { name: firstName, age: age })
-    }
-
-}
+// Execute action
+cartStore.actions.addItem({ id: 101, name: 'Headphones', price: 99 })
 ```
 
-### Putting it all together
-Here is a sample store file based on all of the sample items above:
+---
 
-```javascript
-import { DiameterStore } from './path/to/diameter'
+## API Reference
 
-export class MyStore extends DiameterStore {
+### `createFeatureStore(options)`
 
-    constructor() {
-        super();
-        this.initState();
-        this.initActions();
-        this.initSubscriptions();
-    }
+Creates and returns a Diameter feature store object.
 
-    initState() {
-        this.setState('some-modal', { showModal: false })
-        this.setState('some-counter', { counter: 0 })
-        this.setState('some-user', { user: {name: "John"} })
-        this.setState('some-user-list', { userList: [ { name: "John", age: 30 } ] })
-        this.setState('some-login-state'), { isLoggedIn: false }
-    }
+#### Options (`options`)
 
-    initSubscriptions() {
-        const self = this;
+| Option | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `name` | `string` | **Yes** | Unique key identifying the feature slice. |
+| `state` | `Object \| Function` | No | Plain state object, getter function, or store instance with `.getState()`. |
+| `subscribe` | `Function` | No | Custom subscription function `(callback) => cleanupFn`. |
+| `actions` | `Object \| Function` | No | Action map object or factory function `({ name, state, engine, ...meta }) => actions`. |
+| `engine` | `Object` | No | Execution engine instance (e.g., Vertex engine). |
+| `...meta` | `any` | No | Any additional key/value context attached directly to the store instance. |
 
-        this.subscribe('some-login-state', (state) => {
-            self.login(state);
-        })
-    }
+#### Return Value
 
-    initActions() {
-        this.addAction('some-modal', 'showModal', (state) => {
-            return {...state, showModal: true }
-        })
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| `name` | `string` | Store slice name. |
+| `state` | `any` | Getter returning the current state snapshot. |
+| `subscribe(cb)` | `Function` | Sets up a listener for state changes and returns an unsubscribe function. |
+| `actions` | `Object` | Map of bound actions available for execution. |
 
-        this.addAction('some-counter', 'incrementCounter', (state) => {
-            return {...state, counter: state.counter+1}
-        })
+---
 
-        this.addAction('some-user', 'changeName', (state, newName) => {
-            return {...state, user: { name: newName }}
-        })
+## License
 
-        this.addAction('some-user-list', 'addUser', (state, newUser) => {
-            return state.userList.push(newUser);
-        })
-    }
-
-    showModal() {
-        this.setState('some-modal', { showModal: true })
-    }
-
-    hideModal() {
-        this.setState('some-modal', { showModal: false })
-    }
-
-    addUser(firstName, age) {
-        this.runAction('some-user-list', 'addUser', { name: firstName, age: age })
-    }
-
-    login(state) {
-        console.log('made it to "login" in our sample store: ', state);
-    }
-
-}
-```
-
-## Example Usage
-Given the sample store setup above, here are some examples of how you might interact with this store from components in your app.
-
-### Create a New Diameter Instance
-In most cases you'll probably want Diameter to be a singleton imported at the top of your app. This will give you an app-wide store pattern and persistent state, however you could spin-up more than one based on your needs.
-
-```javascript
-import { Diameter } from './path/to/diameter'
-
-// Create a new Diameter instance
-const diameter = new Diameter();
-```
-
-### Add a Store to Diameter
-Diameter itself has basic under-the-hood state management capabilities from Radius that are exposed, however you probably want to create new stores for various features of your app. If you just need basic state management, check out Radius which solely focuses on simple state management without a "store" concept baked in.
-
-The `.addStore()` method accepts a store label and an instantiated store class: `.addStore(storeLabel, storeClassInstance)`
-
-```javascript
-import { Diameter } from './path/to/diameter'
-import { MyStore } from './path/to/MyStore'
-
-// Create a new Diameter instance
-const diameter = new Diameter();
-
-// Instantiate your new store. 
-/* 
-You would typically do this in a separate file where 
-your Diameter instance is imported.
-Showing it in one place here for example purposes. 
-*/
-const myStore = new MyStore();
-
-// Add your new store to Diameter
-diameter.addStore('myStore', myStore)
-```
-
-### Calling a Store Action
-Now that you've attached your store to Diameter, you can access the various methods from it.
-
-```javascript
-import { Diameter } from './path/to/diameter'
-import { MyStore } from './path/to/MyStore'
-
-// Create a new Diameter instance
-const diameter = new Diameter();
-
-// Instantiate your new store. 
-const myStore = new MyStore();
-
-// Add your new store to Diameter
-diameter.addStore('myStore', myStore)
-
-// Run an action/method from your store
-diameter.stores.myStore.adduser('John', 30) // (name, age)
-```
-
-### Subscribing to Store Changes
-You can subscribe to state changes from specific events within specific stores. Each store has its own event subscriptions and definitions so you can work in isolation from store-to-store.
-
-The `.subscribe()` method accepts an event label and a callback: `.subscribe(eventLabel, callbackFn)`
-
-```javascript
-import { Diameter } from './path/to/diameter'
-import { MyStore } from './path/to/MyStore'
-
-// Create a new Diameter instance
-const diameter = new Diameter();
-
-// Instantiate your new store. 
-const myStore = new MyStore();
-
-// Add your new store to Diameter
-diameter.addStore('myStore', myStore)
-
-// Subscribe to a state change
-diameter.stores.myStore.subscribe('some-modal', (state) => { console.log('Someone change the modal state: ', state) } )
-
-// Call an action from the store to change the state via the same event
-diameter.stores.myStore.showModal()
-
-// Alternatively, we could change the state directly, but you would typically hide this within a store method
-diameter.stores.myStore.setState('some-modal', { showModal: true })
-```
-
-### Calling Actions from a Store
-Remember those actions with initialized in our sample store above? Those are ready to be used by any component importing our store.
-
-The `.runAction()` store method requires an event label and action name: `.runAction(eventLabel, actionName)`
-
-If your action accepts arguments, then a third parameter can be passed: `.runAction(eventLabel, actionName, args)`
-
-```javascript
-import { Diameter } from './path/to/diameter'
-import { MyStore } from './path/to/MyStore'
-
-// Create a new Diameter instance
-const diameter = new Diameter();
-
-// Instantiate your new store. 
-const myStore = new MyStore();
-
-// Add your new store to Diameter
-diameter.addStore('myStore', myStore)
-
-// Call an action that was defined in the store
-diameter.stores.myStore.runAction('some-counter', 'incrementCounter')
-
-// Or maybe we want to use the core action to add a user instead of the simpler method we used earlier
-diameter.stores.myStore.runAction('some-user-list', 'addUser', { name: "Bob", age: 34 })
-```
+MIT

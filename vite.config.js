@@ -6,25 +6,34 @@ export default defineConfig({
         
     ],
     build: {
-        // format: 'es',
+        format: 'es',
         outDir: 'dist',
         lib: {
-            entry: resolve(__dirname, 'main.js'),
-            name: "Vertex",
-            // type: "module",
-            // filename: "vertex",
-            filename: (format) => `diameter.${format}.js`,
+            entry: resolve(import.meta.dirname, 'src/index.js'),
+            name: "DiameterStore",
+            type: "module",
+            filename: "diameter_store",
             formats: ['es'], // Ensure it is an ES module format
         },
-        sourcemap: true,
+        sourcemap: false,
         target: 'esnext',
         minify: false,
-        // minify: terser, // Enable minification using Terser (default minifier)
+        // minify: 'terser', // Enable minification using Terser (default minifier)
+        terserOptions: {
+            format: {
+                max_line_len: 0,      // Removes line breaks / collapses to a single line
+                comments: false,       // Strips comments like //#region and /* @__PURE__ */
+            },
+            compress: {
+                drop_console: true,    // Optional: removes console statements
+                passes: 2,             // Extra compression pass
+            },
+        },
         rollupOptions: {
             output: {
                 // You can further customize how the file is named
                 // For example, if you want to ensure it's myModule.js:
-                entryFileNames: 'diameter.js', // Output filename
+                entryFileNames: 'diameter_store.js', // Output filename
                 chunkFileNames: '[name].js', // Name for any code-split chunks
                 assetFileNames: '[name][extname]', // Asset filenames
                 // Ensure that minification is applied
